@@ -11,6 +11,12 @@ namespace Experiment
     {
         static void Main(string[] args)
         {
+            var result = 0;
+
+            IntConverter.Reverse(12345, ref result);
+
+            Console.WriteLine(result);
+
         }
     }
 }

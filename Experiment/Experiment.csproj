@@ -68,8 +68,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncCopyTest.cs" />
     <Compile Include="BagOfWordsTest.cs" />
     <Compile Include="DivideIntByInt.cs" />
+    <Compile Include="HashFileTest.cs" />
     <Compile Include="MecabRunner.cs" />
     <Compile Include="AttributeTest.cs" />
     <Compile Include="Program.cs" />

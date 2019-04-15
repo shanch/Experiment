@@ -11,6 +11,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace Experiment
 {
@@ -18,41 +21,35 @@ namespace Experiment
     {
         static void Main(string[] args)
         {
-        }
+            List<int> result = new List<int>();
 
-        static void HashFileTest()
-        {
-            MD5 md5 = MD5.Create();
-
-            using (ZipArchive archive = ZipFile.OpenRead(@"C:\Temp\JE2.zip"))
+            foreach (string file in Directory.EnumerateFiles(@"C:\AutoMAT\Data\B0627\Backup\XML"))
             {
-                foreach (var e in archive.Entries)
+                XDocument xdoc = XDocument.Load(file);
+
+                var nsmgr = new XmlNamespaceManager(new NameTable());
+                nsmgr.AddNamespace("jp", "http://www.jpo.go.jp");
+
+                var pageNum = xdoc.XPathSelectElement("//jp:total-pages", nsmgr).Value;
+
+                int lenOfText = 0;
+
+                foreach(XText text in (IEnumerable)xdoc.XPathEvaluate("//*/text()"))
                 {
-                    using (var stream = e.Open())
-                    {
-                        byte[] bs = md5.ComputeHash(stream);
-
-                        foreach (byte b in bs)
-                        {
-                            Console.Write(b.ToString("x2"));
-                        }
-                        Console.WriteLine();
-                    }
+                    lenOfText += text.Value.Length;
                 }
+
+                result.Add(lenOfText / int.Parse(pageNum));
+
+//                break;
             }
+
+            Console.WriteLine(result.Average());
+            Console.WriteLine(result.Max());
+            Console.WriteLine(result.Min());
+
         }
 
-        static void AsyncCopyTest()
-        {
-            Uri uri = new Uri(@"X:\Dictionary\MATDictionaryDataCompressor\JE.zip");
 
-            var client = new WebClient();
-            client.DownloadProgressChanged += (sender, e) =>
-            {
-                Console.WriteLine(e.ProgressPercentage);
-            };
-
-            client.DownloadFileTaskAsync(uri, @"C:\Temp\JE.zip").Wait();
-        }
     }
 }
